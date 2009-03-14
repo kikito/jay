@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html debug="true">
+<head>
+
+<script type="text/javascript" src="../../lib/jay.js"></script>
+
+</head>
+<body>
+
+<script type="text/javascript">
+  
+  var game = new Jay.Game({
+    screen:{ backgroundStyle:"#009900" } 
+  } );
+  
+  var sheepSprite = game.loadSprite( '../images/sheep.gif', {
+    defaultFrameWidth: 20,
+    defaultFrameHeight: 20,
+    animations: {
+      walk_r:  [{x:0,y:0}, {x:0,y:20}, {x:0,y:0}, {x:0,y:40}],
+      walk_ru: [{x:20,y:0}, {x:20,y:20}, {x:20,y:0}, {x:20,y:40}],
+      walk_u:  [{x:40,y:0}, {x:40,y:20}, {x:40,y:0}, {x:40,y:40}],
+      walk_lu: [{x:60,y:0}, {x:60,y:20}, {x:60,y:0}, {x:60,y:40}],
+      walk_l:  [{x:80,y:0}, {x:80,y:20}, {x:80,y:0}, {x:80,y:40}],
+      walk_ld: [{x:100,y:0}, {x:100,y:20}, {x:100,y:0}, {x:100,y:40}],
+      walk_d:  [{x:120,y:0}, {x:120,y:20}, {x:120,y:0}, {x:120,y:40}],
+      walk_rd: [{x:140,y:0}, {x:140,y:20}, {x:140,y:0}, {x:140,y:40}],
+      look_r: [{x:0,y:0,count:20}, {x:0,y:80,count:10}, {x:0,y:0,count:10}, {x:0,y:100,count:10}], // The third parameter on each frame says how many ticks
+      look_ru: [{x:20,y:0,count:20}, {x:20,y:80,count:10}, {x:20,y:0,count:10}, {x:20,y:100,count:10}], // it will display while doing the animation
+      look_u: [{x:40,y:0,count:20}, {x:40,y:80,count:10}, {x:40,y:0,count:10}, {x:40,y:100,count:10}],
+      look_lu: [{x:60,y:0,count:20}, {x:60,y:80,count:10}, {x:60,y:0,count:10}, {x:60,y:100,count:10}],
+      look_l: [{x:80,y:0,count:20}, {x:80,y:80,count:10}, {x:80,y:0,count:10}, {x:80,y:100,count:10}],
+      look_ld: [{x:100,y:0,count:20}, {x:100,y:80,count:10}, {x:100,y:0,count:10}, {x:100,y:100,count:10}],
+      look_d: [{x:120,y:0,count:20}, {x:120,y:80,count:10}, {x:120,y:0,count:10}, {x:120,y:100,count:10}],
+      look_rd: [{x:140,y:0,count:20}, {x:140,y:80,count:10}, {x:140,y:0,count:10}, {x:140,y:100,count:10}],
+      eat_r: [{x:0,y:0,count:20}, {x:0,y:80,count:20}],
+      eat_ru: [{x:20,y:0,count:20}, {x:20,y:80,count:20}],
+      eat_u: [{x:40,y:0,count:20}, {x:40,y:80,count:20}],
+      eat_lu: [{x:60,y:0,count:20}, {x:60,y:80,count:20}],
+      eat_l: [{x:80,y:0,count:20}, {x:80,y:80,count:20}],
+      eat_ld: [{x:100,y:0,count:20}, {x:100,y:80,count:20}],
+      eat_d: [{x:120,y:0,count:20}, {x:120,y:80,count:20}],
+      eat_rd: [{x:140,y:0,count:20}, {x:140,y:80,count:20}],
+      roll_1: [{x:0,y:0}, {x:20,y:0}, {x:40,y:0}, {x:60,y:0}, {x:80,y:0}, {x:100,y:0}, {x:120,y:0}, {x:140,y:0}],  // normal legs
+      roll_2: [{x:0,y:20}, {x:20,y:20}, {x:40,y:20}, {x:60,y:20}, {x:80,y:20}, {x:100,y:20}, {x:120,y:20}, {x:140,y:20}],  // open legs
+      roll_3: [{x:0,y:40}, {x:20,y:40}, {x:40,y:40}, {x:60,y:40}, {x:80,y:40}, {x:100,y:40}, {x:120,y:40}, {x:140,y:40}]   // closed legs
+    }
+  });
+  
+  var Sheep = game.createActorClass(Jay.Actor, {
+    init: function(x, y, animation) {
+      this._super({ sprite: sheepSprite, x: x, y: y, animation: animation });
+    },
+    run: function() {
+      this.animate();
+    }
+  });
+  
+  game.waitForLoad();
+  
+  game.loaded = function () {
+    var maxSheeps = 50;
+    var x, y, animation, s;
+    // Creates a number of sheeps (defined by maxSheeps) with random x, y and one randomly picked animation
+    for(var i=0; i<maxSheeps; i++) {
+      x = Jay.random(game.screen.width - 32);
+      y = Jay.random(game.screen.height - 32);
+      animation = sheepSprite.animationsArray[Jay.random(sheepSprite.animationsArray.length-1)];
+      s=new Sheep(x, y, animation);
+    }
+    
+    this.start();
+  };
+
+</script>
+
+</body>
+</html>

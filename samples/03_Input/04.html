@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html debug="true">
+<head>
+
+<script type="text/javascript" src="../../lib/jay.js"></script>
+
+</head>
+<body>
+
+<script type="text/javascript">
+  
+  var game = new Jay.Game({
+    screen: { backgroundStyle:"#009900"},
+    input:  { whiteUp:"KEY_UP", whiteDown:"KEY_DOWN", whiteLeft:"KEY_LEFT", whiteRight:"KEY_RIGHT",
+              blueUp:"MOUSE_WHEEL_UP", blueDown:"MOUSE_WHEEL_DOWN", blueLeft:"MOUSE_LEFT", blueRight:"MOUSE_RIGHT",
+              mouseCoords:"MOUSE_MOVE"
+            }
+  });
+  
+  var sheepSpriteOptions = {
+    defaultFrameWidth: 20,
+    defaultFrameHeight: 20,
+    animations: {
+      walk_r:  [{x:0,y:0}, {x:0,y:20}, {x:0,y:0}, {x:0,y:40}],
+      walk_ru: [{x:20,y:0}, {x:20,y:20}, {x:20,y:0}, {x:20,y:40}],
+      walk_u:  [{x:40,y:0}, {x:40,y:20}, {x:40,y:0}, {x:40,y:40}],
+      walk_lu: [{x:60,y:0}, {x:60,y:20}, {x:60,y:0}, {x:60,y:40}],
+      walk_l:  [{x:80,y:0}, {x:80,y:20}, {x:80,y:0}, {x:80,y:40}],
+      walk_ld: [{x:100,y:0}, {x:100,y:20}, {x:100,y:0}, {x:100,y:40}],
+      walk_d:  [{x:120,y:0}, {x:120,y:20}, {x:120,y:0}, {x:120,y:40}],
+      walk_rd: [{x:140,y:0}, {x:140,y:20}, {x:140,y:0}, {x:140,y:40}],
+      idle_r:  [{x:0,y:0}],
+      idle_ru: [{x:20,y:0}],
+      idle_u:  [{x:40,y:0}],
+      idle_lu: [{x:60,y:0}],
+      idle_l:  [{x:80,y:0}],
+      idle_ld: [{x:100,y:0}],
+      idle_d:  [{x:120,y:0}],
+      idle_rd: [{x:140,y:0}]
+    }
+  };
+  
+  var whiteSheepSprite  =  game.loadSprite( '../images/sheep.gif',        sheepSpriteOptions);  
+  var blueSheepSprite   =  game.loadSprite( '../images/sheep_blue.gif',   sheepSpriteOptions);
+  var redSheepSprite    =  game.loadSprite( '../images/sheep_red.gif',    sheepSpriteOptions);
+  //var yellowSheepSprite =  game.loadSprite( '../images/sheep_yellow.gif', sheepSpriteOptions);
+
+  // A parent class that allows to move a sheep easily, updating animation and position
+  // automatically. It is supposed to be subclassed by others
+  var Sheep = game.createActorClass(Jay.Actor, {
+    init: function(x, y, sprite) {
+      this._super({ sprite: sprite, x: x, y: y });
+      this.orientation = "r"; // default orientation is right
+      this.velX=0;
+      this.velY=0;
+    },
+    run: function () {
+      this.calculateVelocity();
+    
+      if(this.velX == 0 && this.velY == 0) { // the sheep is stopped, so we set the animation to iddle
+        this.setAnimation(this.sprite.animations["idle_" + this.orientation]);
+      } else { // the sheep is moving.
+        this.orientation = (this.velX<0 ? "l" : (this.velX>0 ? "r" : "")) + 
+                           (this.velY<0 ? "u" : (this.velY>0 ? "d" : ""));
+        this.setAnimation(this.sprite.animations["walk_" + this.orientation]);
+        this.increaseXY (this.velX, this.velY); //move the sheep position by increment
+      }
+      this.animate(); //Update the animation (move legs, or just idle)
+    },
+    calculateVelocity: function () {
+      this.velX=0;
+      this.velY=0;
+    }
+  });
+  
+  game.loaded = function() {
+
+    var speed = 2;
+    var actions = game.input.actions;
+    
+    var whiteSheep = new Sheep(200, 200, whiteSheepSprite);
+    whiteSheep.calculateVelocity = function() {
+      this.velX =  (actions.whiteRight.isDown ? speed : 0 ) + (actions.whiteLeft.isDown ? -speed : 0);
+      this.velY =  (actions.whiteUp.isDown ? -speed : 0) + (actions.whiteDown.isDown ? speed : 0);
+    };
+    
+    var blueSheep = new Sheep(400, 200, blueSheepSprite);
+    blueSheep.calculateVelocity = function() {
+      this.velX =  (actions.blueRight.isDown ? speed : 0 ) + (actions.blueLeft.isDown ? -speed : 0);
+      this.velY =  (actions.blueUp.isDown ? -speed : 0) + (actions.blueDown.isDown ? speed : 0);
+    };
+    
+    var redSheep = new Sheep(200, 100, redSheepSprite);
+    redSheep.calculateVelocity = function() {
+      this.velX =  (actions.mouseCoords.x - 10 > this.x ?  speed : 0) + (actions.mouseCoords.x + 10 < this.x ? -speed : 0);
+      this.velY =  (actions.mouseCoords.y - 10 > this.y ?  speed : 0) + (actions.mouseCoords.y + 10 < this.y ? -speed : 0);
+    };
+    
+    this.start();
+  };
+  
+  game.waitForLoad(); // this calls game.loaded() - that by default calls game.start() - once all images are lodaded
+
+
+</script>
+
+</body>
+</html>
+

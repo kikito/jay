@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html debug="true">
+<head>
+
+<script type="text/javascript" src="../../lib/jay.js"></script>
+
+</head>
+<body>
+
+<script type="text/javascript">
+  
+  // Creates a game with a green screen and default dimensions
+  var game = new Jay.Game({
+    screen:{ backgroundStyle:"#009900" } 
+  });
+  
+  var sheepSprite = game.loadSprite( '../images/sheep.gif', {
+    defaultFrameWidth: 20,
+    defaultFrameHeight: 20,
+    animations: {
+      walk_r:  [{x:0,y:0}, {x:0,y:20}, {x:0,y:0}, {x:0,y:40}],
+      walk_u:  [{x:40,y:0}, {x:40,y:20}, {x:40,y:0}, {x:40,y:40}],
+      walk_l:  [{x:80,y:0}, {x:80,y:20}, {x:80,y:0}, {x:80,y:40}],
+      walk_d:  [{x:120,y:0}, {x:120,y:20}, {x:120,y:0}, {x:120,y:40}],
+    }
+  });
+  
+  var Sheep = game.createActorClass(Jay.Actor, {
+    init: function(x, y, animation) {
+      this._super({ sprite: sheepSprite, x: x, y: y, animation: animation });
+    },
+    run: function() {
+      this.animate();
+    }
+  });
+  
+  game.loaded = function () {  
+    var sheep = new Sheep(100, 100, sheepSprite.animations.walk_r);
+
+    this.start();
+  };
+  
+  game.waitForLoad(); // whait for the sprites to load. When done, call game.loaded
+   
+
+</script>
+
+</body>
+</html>

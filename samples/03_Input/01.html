@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html debug="true">
+<head>
+
+<script type="text/javascript" src="../../lib/jay.js"></script>
+
+</head>
+<body>
+
+<script type="text/javascript">
+  
+  var game = new Jay.Game({
+    screen: { backgroundStyle:"#009900"},
+    input:  { up:"KEY_UP", down:"KEY_DOWN", left:"KEY_LEFT", right:"KEY_RIGHT" }
+  });
+  
+  var sheepSprite = game.loadSprite( '../images/sheep.gif', {
+      defaultFrameWidth: 20,
+      defaultFrameHeight: 20,
+      animations: {
+        walk_r:  [{x:0,y:0}, {x:0,y:20}, {x:0,y:0}, {x:0,y:40}],
+        walk_u:  [{x:40,y:0}, {x:40,y:20}, {x:40,y:0}, {x:40,y:40}],
+        walk_l:  [{x:80,y:0}, {x:80,y:20}, {x:80,y:0}, {x:80,y:40}],
+        walk_d:  [{x:120,y:0}, {x:120,y:20}, {x:120,y:0}, {x:120,y:40}]
+      }
+    });
+
+  var Sheep = game.createActorClass(Jay.Actor, {
+    init: function(x, y, sprite) {
+      this._super({ sprite: sprite, x: x, y: y });
+      this.setAnimation(this.sprite.animations.walk_r);
+    },
+    run: function () {
+      var speed = 2;
+      var actions = game.input.actions;
+      if(actions.left.isDown) {
+        this.setAnimation(this.sprite.animations.walk_l);
+        this.increaseX(-speed);
+      } else if (actions.right.isDown) {
+        this.setAnimation(this.sprite.animations.walk_r);
+        this.increaseX(speed);
+      }
+      if(actions.up.isDown) {
+        this.setAnimation(this.sprite.animations.walk_u);
+        this.increaseY(-speed);
+      } else if (actions.down.isDown) {
+        this.setAnimation(this.sprite.animations.walk_d);
+        this.increaseY(speed);
+      }
+      this.animate();
+    }
+  });
+  
+  game.loaded = function() {
+    var s = new Sheep(200, 200, sheepSprite);    
+    this.start();
+  };
+  
+  game.waitForLoad(); // this calls game.loaded() - that by default calls game.start() - once all images are lodaded
+
+
+</script>
+
+</body>
+</html>
+
